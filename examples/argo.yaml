@@ -35,6 +35,9 @@ spec:
       command: [sh, -c]
       args: ["until docker ps; do sleep 3; done; echo ready &&
               docker build -t abdullahalmariah/kube-git:latest ."]
+      env:
+      - name: DOCKER_HOST
+        value: tcp://localhost:2375
       workingDir: /go/src/github.com/appwavelets/kube-git
       resources:
         limits:
