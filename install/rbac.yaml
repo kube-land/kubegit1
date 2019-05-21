@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    k8s-app: kube-git
+  name: kube-git
+  namespace: default
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: kube-git
+  namespace: default
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get","list","watch"]
+- apiGroups: ["kubegit.appwavelets.com"]
+  resources: ["githooks"]
+  verbs: ["get","list","watch"]
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: kube-git
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kube-git
+subjects:
+- kind: ServiceAccount
+  name: kube-git
+  namespace: default

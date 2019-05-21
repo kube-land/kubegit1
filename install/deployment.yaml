@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-git
+  namespace: default
+  labels:
+    k8s-app: kube-git
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: kube-git
+  template:
+    metadata:
+      labels:
+        k8s-app: kube-git
+    spec:
+      containers:
+      - image: abdullahalmariah/kube-git:latest
+        imagePullPolicy: Always
+        name: kube-git
+        args:
+          - -logtostderr=true
+          - -v=2
+          - -github-webhook-secret=SECRET
+          - -notification-config-file=/etc/kube-git/notification.yaml
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+          - name: kube-git-notification
+            mountPath: /etc/kube-git/
+      volumes:
+        - name: kube-git-notification
+          configMap:
+            name: kube-git-notification
+      restartPolicy: Always
+      serviceAccountName: kube-git

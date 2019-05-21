@@ -1,0 +1,57 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: kube-git-build-
+  namespace: ci
+spec:
+  ttlSecondsAfterFinished: 3600
+  entrypoint: kube-git-build
+  arguments:
+    parameters:
+    - name: branch
+      value: master
+    - name: revision
+      value: master
+    - name: kubegitRepo
+      value: https://github.com/appwavelets/kube-git.git
+  serviceAccountName: argo-appwavelets
+  templates:
+
+  - name: kube-git-build
+    steps:
+    - - name: build-code
+        template: build-code
+
+  - name: build-code
+    inputs:
+      artifacts:
+      - name: kube-git
+        path: /go/src/github.com/appwavelets/kube-git
+        git:
+          repo: "{{workflow.parameters.kubegitRepo}}"
+          revision: "{{workflow.parameters.revision}}"
+    container:
+      image: "abdullahalmariah/cloud-tools:latest"
+      command: [sh, -c]
+      args: ["until docker ps; do sleep 3; done; echo ready &&
+              docker build -t abdullahalmariah/kube-git:latest ."]
+      workingDir: /go/src/github.com/appwavelets/kube-git
+      resources:
+        limits:
+          memory: 2Gi
+          cpu: 1
+        requests:
+          memory: 2Gi
+          cpu: 1
+    sidecars:
+    - name: dind
+      image: docker:17.10-dind
+      securityContext:
+        privileged: true
+      resources:
+        limits:
+          memory: 2Gi
+          cpu: 1
+        requests:
+          memory: 2Gi
+          cpu: 1

@@ -1,0 +1,11 @@
+resources:
+  - crd.yaml
+  - rbac.yaml
+  - service.yaml
+  - deployment.yaml
+
+configMapGenerator:
+- name: kube-git-notification
+  namespace: default
+  files:
+    - conf/notification.yaml

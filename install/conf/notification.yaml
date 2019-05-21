@@ -1,0 +1,10 @@
+github:
+  github-example:
+    url: "https://argo.example.com/workflows/${NAMESPACE}/${NAME}"
+    # personal access token
+    token: ...
+slack:
+  slack-ci:
+    url: "https://k8s.example.com/#!/job/${NAMESPACE}/${NAME}?namespace=${NAMESPACE}"
+    webhookURL: ...
+    channel: "#ci"

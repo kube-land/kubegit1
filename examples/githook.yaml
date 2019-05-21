@@ -1,0 +1,15 @@
+apiVersion: kubegit.appwavelets.com/v1alpha1
+kind: GitHook
+metadata:
+  name: kube-git
+  namespace: ci
+spec:
+  repository: https://github.com/appwavelets/kube-git.git
+  branches:
+    - "*"
+  manifest: examples/argo.yaml
+  argoWorkflow:
+    revisionParameterName: revision
+    branchParameterName: branch
+  notification:
+    slack: appwavelets-ci
