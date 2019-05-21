@@ -16,6 +16,7 @@ import (
 
 	"github.com/appwavelets/kube-git/pkg/controller"
 	"github.com/appwavelets/kube-git/pkg/notification"
+	"github.com/appwavelets/kube-git/pkg/tools"
 	"github.com/appwavelets/kube-git/pkg/git"
 	"gopkg.in/go-playground/webhooks.v5/github"
 
@@ -28,9 +29,6 @@ import (
 	argo "github.com/argoproj/argo/pkg/apis/workflow/v1alpha1"
 	wfclient "github.com/argoproj/argo/pkg/client/clientset/versioned"
 	batch "k8s.io/api/batch/v1"
-
-	"path/filepath"
-
 )
 
 type WebhookHandler struct {
@@ -308,11 +306,8 @@ func (h WebhookHandler) UpdateGitHook(gh *ghapi.GitHook, annotations map[string]
 }
 
 func matchBranch(branches []string, branch string) bool {
-
-	fmt.Println("we are here")
-
 	for _, b := range branches {
-		if ok, _ := filepath.Match(b, branch); ok {
+		if tools.Glob(b, branch) {
 			return true
 		}
 	}
