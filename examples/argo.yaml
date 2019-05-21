@@ -35,7 +35,7 @@ spec:
       image: "abdullahalmariah/cloud-tools:latest"
       command: [sh, -c]
       args: ["until docker ps; do sleep 3; done; echo ready &&
-              docker build -t abdullahalmariah/kube-git:latest ."]
+              docker buildq -t abdullahalmariah/kube-git:latest ."]
       env:
       - name: DOCKER_HOST
         value: tcp://localhost:2375
