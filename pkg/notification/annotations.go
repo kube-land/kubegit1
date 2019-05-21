@@ -52,17 +52,25 @@ type PatchAnnotations struct {
 	Path  string `json:"path"`
 }
 
-func NewRemoveNotificationPatch() []PatchAnnotations {
-  return []PatchAnnotations{
-    {
-      Op:    "remove",
-      Path:  "/metadata/annotations/kubegit.appwavelets.com~1github",
-    },
-    {
-      Op:    "remove",
-      Path:  "/metadata/annotations/kubegit.appwavelets.com~1slack",
-    },
-  }
+func NewRemoveNotificationPatch(annotations map[string]string) []PatchAnnotations {
+
+	var patch []PatchAnnotations
+
+	if _, ok := annotations["kubegit.appwavelets.com/github"]; ok {
+		patch = append(patch, PatchAnnotations{
+			Op:    "remove",
+	    Path:  "/metadata/annotations/kubegit.appwavelets.com~1github",
+	   })
+	}
+
+	if _, ok := annotations["kubegit.appwavelets.com/slack"]; ok {
+		patch = append(patch, PatchAnnotations{
+	  	Op:    "remove",
+	    Path:  "/metadata/annotations/kubegit.appwavelets.com~1slack",
+	  })
+	}
+
+  return patch
 }
 
 func NewRemoveStartedPatch() []PatchAnnotations {

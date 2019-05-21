@@ -37,6 +37,8 @@ spec:
     - "*"
   # manifest that will be applied
   manifest: argo.yaml
+  # append timestamp to resource name
+  #timestampSuffix: true
   argoWorkflow:
     revisionParameterName: revision
     branchParameterName: branch
@@ -56,7 +58,7 @@ spec:
 
 The manifest file should have either one `Workflow` or one `Job`. If the defined manifest is of type Argo `Workflow`, you can use `argoWorkflow.revisionParameterName` and `argoWorkflow.branchParameterName` to substitute `arguments.parameters` in the Workflow . That could be used to apply conditions on branches, or to checkout the repository revision of the commit that triggered the Workflow.
 
-*Note:* Make sure to use `generateName` instead of `name` for the defined resource (Job/Workflow) in the manifest file.
+*Note:* It is recommended to use `generateName` instead of `name` for the defined resource (Job/Workflow) in the manifest file. If `generateName` is not used, you can set `timestampSuffix: true` to append timestamp to resource name.
 
 To configure the notification, the argument `-notification-config-file` of the controller should be configred with YAML file (eg., `etc/kube-git/notification.yaml`):
 

@@ -248,10 +248,10 @@ func (c *Controller) process(task Task) error {
         for _, condition := range job.Status.Conditions {
           if condition.Type == "Failed" {
             c.notification.Notify("FAILED", "Job", job.ObjectMeta.Namespace, job.ObjectMeta.Name, job.ObjectMeta.Annotations)
-            c.jobRemoveNotification(job.ObjectMeta.Namespace, job.ObjectMeta.Name)
+            c.jobRemoveNotification(job.ObjectMeta.Namespace, job.ObjectMeta.Name, job.ObjectMeta.Annotations)
           } else if condition.Type == "Complete" {
             c.notification.Notify("SUCCEEDED", "Job", job.ObjectMeta.Namespace, job.ObjectMeta.Name, job.ObjectMeta.Annotations)
-            c.jobRemoveNotification(job.ObjectMeta.Namespace, job.ObjectMeta.Name)
+            c.jobRemoveNotification(job.ObjectMeta.Namespace, job.ObjectMeta.Name, job.ObjectMeta.Annotations)
           }
         }
       }
@@ -271,10 +271,10 @@ func (c *Controller) process(task Task) error {
       } else {
         if wf.Status.Phase == "Failed" {
           c.notification.Notify("FAILED", "Argo Workflow", wf.ObjectMeta.Namespace, wf.ObjectMeta.Name, wf.ObjectMeta.Annotations)
-          c.wfRemoveNotification(wf.ObjectMeta.Namespace, wf.ObjectMeta.Name)
+          c.wfRemoveNotification(wf.ObjectMeta.Namespace, wf.ObjectMeta.Name, wf.ObjectMeta.Annotations)
         } else if wf.Status.Phase == "Succeeded" {
           c.notification.Notify("SUCCEEDED", "Argo Workflow", wf.ObjectMeta.Namespace, wf.ObjectMeta.Name, wf.ObjectMeta.Annotations)
-          c.wfRemoveNotification(wf.ObjectMeta.Namespace, wf.ObjectMeta.Name)
+          c.wfRemoveNotification(wf.ObjectMeta.Namespace, wf.ObjectMeta.Name, wf.ObjectMeta.Annotations)
         }
       }
     }
@@ -294,15 +294,15 @@ func (c *Controller) GetGitHooks() []*ghapi.GitHook {
 	return ghs
 }
 
-func (c *Controller) jobRemoveNotification(ns string, job string) error {
-	payloadBytes, _ := json.Marshal(notification.NewRemoveNotificationPatch())
+func (c *Controller) jobRemoveNotification(ns string, job string, annotations map[string]string) error {
+	payloadBytes, _ := json.Marshal(notification.NewRemoveNotificationPatch(annotations))
 	_, err := c.clientset.BatchV1().Jobs(ns).Patch(job, types.JSONPatchType, payloadBytes)
   fmt.Println(err)
 	return err
 }
 
-func (c *Controller) wfRemoveNotification(ns string, wf string) error {
-	payloadBytes, _ := json.Marshal(notification.NewRemoveNotificationPatch())
+func (c *Controller) wfRemoveNotification(ns string, wf string, annotations map[string]string) error {
+	payloadBytes, _ := json.Marshal(notification.NewRemoveNotificationPatch(annotations))
 	_, err := c.wfClientset.ArgoprojV1alpha1().Workflows(ns).Patch(wf, types.JSONPatchType, payloadBytes)
   fmt.Println(err)
 	return err

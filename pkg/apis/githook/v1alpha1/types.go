@@ -22,6 +22,8 @@ type GitHookSpec struct {
   Branches              []string `json:"branches"`
   Manifest              string   `json:"manifest"`
 
+	TimestampSuffix       bool `json:"timestampSuffix"`
+
 	ArgoWorkflow          *ArgoWorkflowSpec `json:"argoWorkflow"`
 
 	UsernameSecret        Secret `json:"usernameSecret"`

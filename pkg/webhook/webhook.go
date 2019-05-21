@@ -29,6 +29,8 @@ import (
 	wfclient "github.com/argoproj/argo/pkg/client/clientset/versioned"
 	batch "k8s.io/api/batch/v1"
 
+	"path/filepath"
+
 )
 
 type WebhookHandler struct {
@@ -95,7 +97,7 @@ func (h WebhookHandler) GithubWebhook(w http.ResponseWriter, r *http.Request) {
 				// if url param match repository
 				if gh.Spec.Repository == sshURL || gh.Spec.Repository == cloneURL {
 					// if no matched branch, continue
-					if !matchBranch(branch) {
+					if !matchBranch(branch, gh.Spec.Branches) {
 						continue
 					}
 
@@ -194,6 +196,10 @@ func (h WebhookHandler) ApplyGitHook(manifest []byte, gh *ghapi.GitHook, annotat
 			return
 		}
 
+		if gh.Spec.TimestampSuffix && workflow.ObjectMeta.Name != "" {
+			workflow.ObjectMeta.Name = workflow.ObjectMeta.Name + "-" + time.Now().Format("20060102150405")
+		}
+
 		// Set Revision Parameter
 		if gh.Spec.ArgoWorkflow != nil {
 			if gh.Spec.ArgoWorkflow.RevisionParameterName != "" {
@@ -246,6 +252,10 @@ func (h WebhookHandler) ApplyGitHook(manifest []byte, gh *ghapi.GitHook, annotat
 			return
 		}
 
+		if gh.Spec.TimestampSuffix && job.ObjectMeta.Name != "" {
+			job.ObjectMeta.Name = job.ObjectMeta.Name + "-" + time.Now().Format("20060102150405")
+		}
+
 		// set namespace
 		ns := "default"
 		if job.Namespace != "" {
@@ -296,8 +306,13 @@ func (h WebhookHandler) UpdateGitHook(gh *ghapi.GitHook, annotations map[string]
 }
 
 // need to be modified
-func matchBranch(branch string) bool {
-	return true
+func matchBranch(branch string, branches []string) bool {
+	for _, b := range branches {
+		if ok, _ := filepath.Match(branch, b); ok {
+			return true
+		}
+	}
+	return false
 }
 
 /*

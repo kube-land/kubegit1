@@ -8,6 +8,7 @@ spec:
   branches:
     - "*"
   manifest: examples/argo.yaml
+  timestampSuffix: true
   argoWorkflow:
     revisionParameterName: revision
     branchParameterName: branch
