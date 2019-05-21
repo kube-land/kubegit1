@@ -50,6 +50,9 @@ func (g GithubConfig) Notify(status string, kind string, namespace string, name 
 
 func (s GithubStatus) SendGithubStatus(token string, apiURL string) {
 
+  fmt.Println(token, apiURL)
+  fmt.Println(s)
+
   requestByte, err := json.Marshal(s)
   if err != nil {
     fmt.Println(err)
@@ -93,7 +96,7 @@ func (s GithubStatus) SendGithubStatus(token string, apiURL string) {
 
 func parseGithubRepository(repository string) (string, string) {
   // https://github.com/appwavelets/kube-git.git
-  // git@github.com:appwavelets/appwavelets-website.git
+  // git@github.com:appwavelets/kube-git.git
   repoTokenize := strings.Split(repository, "/")
   if len(repoTokenize) >= 2 {
     owner := repoTokenize[len(repoTokenize)-2]
