@@ -12,9 +12,9 @@ Supported notifications:
 * GitHub build status (by personal access tokens)
 * Slack
 
-# Installation
+## Installation
 
-To configure the controller change `install/deployment.yaml` and `install/service.yaml` to fir your environment.
+To configure the controller change `install/deployment.yaml` and `install/service.yaml` to fit your environment.
 
 To use `kube-git` you have to expose the controller publicly to act as a webhook for GitHub. A secret should be configured with controller deployment and used from by GitHub to secure the webhook. Configure either `github-webhook-secret` argument or `GITHUB_WEBHOOK_SECRET` environment variable.
 
@@ -47,7 +47,7 @@ Finally install the controller (after configuration):
 kubectl apply -k install
 ```
 
-# Usage
+## Usage
 
 There is a simple example in `examples` for `kube-git` CI.
 
@@ -93,7 +93,7 @@ The manifest file should have either one `Workflow` or one `Job`. If the defined
 
 *Note:* It is recommended to use `generateName` instead of `name` for the defined resource (Job/Workflow) in the manifest file. If `generateName` is not used, you can set `timestampSuffix: true` to append timestamp to resource name.
 
-# Build
+## Build
 
 ```bash
 GOPATH=~/go CODEGEN_PKG=~/go/src/k8s.io/code-generator bash -xe hack/update-codegen.sh
