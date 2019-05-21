@@ -96,13 +96,15 @@ func (h WebhookHandler) GithubWebhook(w http.ResponseWriter, r *http.Request) {
 			for _, gh := range ghs {
 				// if url param match repository
 				if gh.Spec.Repository == sshURL || gh.Spec.Repository == cloneURL {
-					// if no matched branch, continue
-					if !matchBranch(gh.Spec.Branches, branch) {
-						continue
-					}
 
 					ghFullname := gh.Namespace + "/" + gh.Name
-					klog.Infof("Found GitHook for bitbucket payload: %s", ghFullname)
+					klog.Infof("Found GitHook for GitHub payload: %s", ghFullname)
+
+					// if no matched branch, continue
+					if !matchBranch(gh.Spec.Branches, branch) {
+						klog.Infof("No branches matched the found GitHook '%s' branchs: %s", ghFullname, branch)
+						continue
+					}
 
 					annotations["kubegit.appwavelets.com/githook"] = ghFullname
 					annotations["kubegit.appwavelets.com/repository"] = gh.Spec.Repository
@@ -141,7 +143,7 @@ func (h WebhookHandler) GithubWebhook(w http.ResponseWriter, r *http.Request) {
 						klog.Errorf("Error Fetch files from git repository (%s): %s", gh.Spec.Repository, err.Error())
 						continue
 					}
-					klog.Infof("Applying GitHook of bitbucket payload: %s", ghFullname)
+					klog.Infof("Applying GitHook of GitHub payload: %s", ghFullname)
 					// Apply Manifest
 					go h.ApplyGitHook(manifest, gh, annotations)
 				}
@@ -305,8 +307,10 @@ func (h WebhookHandler) UpdateGitHook(gh *ghapi.GitHook, annotations map[string]
 	}
 }
 
-// need to be modified
 func matchBranch(branches []string, branch string) bool {
+
+	fmt.Println("we are here")
+
 	for _, b := range branches {
 		if ok, _ := filepath.Match(b, branch); ok {
 			return true
