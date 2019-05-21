@@ -136,7 +136,7 @@ func (h WebhookHandler) GithubWebhook(w http.ResponseWriter, r *http.Request) {
 						password = passwordSecret.Data[gh.Spec.PasswordSecret.Key]
 					}
 
-					manifest, err := git.FetchGitFile(gh.Spec.Repository, username, password, sshKey, hash, gh.Spec.Manifest)
+					manifest, err := git.FetchGitFile(gh.Spec.Repository, branch, username, password, sshKey, hash, gh.Spec.Manifest)
 					if err != nil {
 						klog.Errorf("Error Fetch files from git repository (%s): %s", gh.Spec.Repository, err.Error())
 						continue

@@ -14,7 +14,7 @@ import (
 
 )
 
-func FetchGitFile(repository string, username []byte, password []byte, key []byte, hash string, manifest string) ([]byte, error) {
+func FetchGitFile(repository string, branch string, username []byte, password []byte, key []byte, hash string, manifest string) ([]byte, error) {
 
 	var r *git.Repository
 	var err error
@@ -34,6 +34,9 @@ func FetchGitFile(repository string, username []byte, password []byte, key []byt
 		r, err = git.Clone(memory.NewStorage(), fs, &git.CloneOptions{
 	    URL: repository,
 			Auth: auth,
+			ReferenceName: plumbing.ReferenceName(branch),
+			SingleBranch: true,
+			NoCheckout: true,
 		})
 		if err != nil {
 			return nil, err
@@ -45,6 +48,9 @@ func FetchGitFile(repository string, username []byte, password []byte, key []byt
 		r, err = git.Clone(memory.NewStorage(), fs, &git.CloneOptions{
 	    URL: repository,
 			Auth: auth,
+			ReferenceName: plumbing.ReferenceName(branch),
+			SingleBranch: true,
+			NoCheckout: true,
 		})
 		if err != nil {
 			return nil, err
@@ -54,6 +60,9 @@ func FetchGitFile(repository string, username []byte, password []byte, key []byt
 
 		r, err = git.Clone(memory.NewStorage(), fs, &git.CloneOptions{
 	    URL: repository,
+			ReferenceName: plumbing.ReferenceName(branch),
+			SingleBranch: true,
+			NoCheckout: true,
 		})
 		if err != nil {
 			return nil, err
