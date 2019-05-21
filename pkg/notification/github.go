@@ -50,8 +50,7 @@ func (g GithubConfig) Notify(status string, kind string, namespace string, name 
 
 func (s GithubStatus) SendGithubStatus(token string, apiURL string) {
 
-  fmt.Println(token, apiURL)
-  fmt.Println(s)
+  fmt.Println(apiURL)
 
   requestByte, err := json.Marshal(s)
   if err != nil {
