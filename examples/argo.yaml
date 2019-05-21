@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
   #generateName: kube-git-build-
-  name: kube-git-build-
+  name: kube-git-build
   namespace: ci
 spec:
   ttlSecondsAfterFinished: 3600
