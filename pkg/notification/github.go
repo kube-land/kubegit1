@@ -7,6 +7,7 @@ import(
   "io/ioutil"
   "fmt"
   "strings"
+  "k8s.io/klog"
 )
 
 type GithubStatus struct {
@@ -50,7 +51,7 @@ func (g GithubConfig) Notify(status string, kind string, namespace string, name 
 
 func (s GithubStatus) SendGithubStatus(token string, apiURL string) {
 
-  fmt.Println(apiURL)
+  klog.Infof("Send GitHub status: %s", apiURL)
 
   requestByte, err := json.Marshal(s)
   if err != nil {

@@ -12,11 +12,44 @@ Supported notifications:
 * GitHub build status (by personal access tokens)
 * Slack
 
+# Installation
+
+To configure the controller change `install/deployment.yaml` and `install/service.yaml` to fir your environment.
+
+To use `kube-git` you have to expose the controller publicly to act as a webhook for GitHub. A secret should be configured with controller deployment and used from by GitHub to secure the webhook. Configure either `github-webhook-secret` argument or `GITHUB_WEBHOOK_SECRET` environment variable.
+
+To configure the notification, the argument `-notification-config-file` of the controller should be configred with YAML file (eg., `etc/kube-git/notification.yaml`):
+
+```yaml
+# notification.yaml
+github:
+  github-example:
+    # notification URL
+    url: "https://argo.example.com/workflows/${NAMESPACE}/${NAME}"
+    # personal access token
+    token: ...
+  github-example-1:
+    ...
+slack:
+  slack-ci:
+    url: "https://k8s.example.com/#!/job/${NAMESPACE}/${NAME}?namespace=${NAMESPACE}"
+    webhookURL: ...
+    channel: "#ci"
+  slack-ci-1:
+    ...
+```
+
+Using variables `${NAMESPACE}` and `${NAME}` in url will be replaced by `kube-git` with the resource (Job/Workflow) namespace and name.
+
+Finally install the controller (after configuration):
+
+```bash
+kubectl apply -k install
+```
+
 # Usage
 
 There is a simple example in `examples` for `kube-git` CI.
-
-To use `kube-git` you have to expose the controller publicly to act as a webhook for GitHub. A secret should be configured with controller deployment and used from by GitHub to secure the webhook. Configure either `github-webhook-secret` argument or `GITHUB_WEBHOOK_SECRET` environment variable.
 
 To configure GitHub webhook use `DOMAIN/github` URL (for example: `https://kubegit.example.com/github`) and `application/json` content type.
 
@@ -59,29 +92,6 @@ spec:
 The manifest file should have either one `Workflow` or one `Job`. If the defined manifest is of type Argo `Workflow`, you can use `argoWorkflow.revisionParameterName` and `argoWorkflow.branchParameterName` to substitute `arguments.parameters` in the Workflow . That could be used to apply conditions on branches, or to checkout the repository revision of the commit that triggered the Workflow.
 
 *Note:* It is recommended to use `generateName` instead of `name` for the defined resource (Job/Workflow) in the manifest file. If `generateName` is not used, you can set `timestampSuffix: true` to append timestamp to resource name.
-
-To configure the notification, the argument `-notification-config-file` of the controller should be configred with YAML file (eg., `etc/kube-git/notification.yaml`):
-
-```yaml
-# notification.yaml
-github:
-  github-example:
-    # notification URL
-    url: "https://argo.example.com/workflows/${NAMESPACE}/${NAME}"
-    # personal access token
-    token: ...
-  github-example-1:
-    ...
-slack:
-  slack-ci:
-    url: "https://k8s.example.com/#!/job/${NAMESPACE}/${NAME}?namespace=${NAMESPACE}"
-    webhookURL: ...
-    channel: "#ci"
-  slack-ci-1:
-    ...
-```
-
-Using variables `${NAMESPACE}` and `${NAME}` in url will be replaced by `kube-git` with the resource (Job/Workflow) namespace and name.
 
 # Build
 

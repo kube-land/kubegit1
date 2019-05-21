@@ -12,3 +12,5 @@ spec:
     targetPort: 8080
   selector:
     k8s-app: kube-git
+  # To expose the service publicly
+  type: LoadBalancer
