@@ -90,3 +90,4 @@ GOPATH=~/go CODEGEN_PKG=~/go/src/k8s.io/code-generator bash -xe hack/update-code
 docker build -t abdullahalmariah/kube-git:latest .
 docker push abdullahalmariah/kube-git:latest
 ```
+
