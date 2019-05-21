@@ -44,7 +44,7 @@ func (s SlackConfig) Notify(status string, kind string, namespace string, name s
 
   if status == "STARTED" {
     color = "warning"
-    title = fmt.Sprintf("%s Started :building_construction:", kind)
+    title = fmt.Sprintf("%s Started :large_orange_diamond:", kind)
     text = fmt.Sprintf("%s `%s` triggered by githook `%s` has started ", kind, resource, gh)
     fallback = fmt.Sprintf("kube-git: %s `%s` started", kind, resource)
   } else if status == "SUCCEEDED" {
