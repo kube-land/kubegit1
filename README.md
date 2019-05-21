@@ -14,7 +14,7 @@ Supported notifications:
 
 # Usage
 
-There is useful example in `examples` for `kube-git` CI.
+There is a simple example in `examples` for `kube-git` CI.
 
 To use `kube-git` you have to expose the controller publicly to act as a webhook for GitHub. A secret should be configured with controller deployment and used from by GitHub to secure the webhook. Configure either `github-webhook-secret` argument or `GITHUB_WEBHOOK_SECRET` environment variable.
 
