@@ -97,7 +97,7 @@ func (h WebhookHandler) GithubWebhook(w http.ResponseWriter, r *http.Request) {
 				// if url param match repository
 				if gh.Spec.Repository == sshURL || gh.Spec.Repository == cloneURL {
 					// if no matched branch, continue
-					if !matchBranch(branch, gh.Spec.Branches) {
+					if !matchBranch(gh.Spec.Branches, branch) {
 						continue
 					}
 
@@ -306,9 +306,9 @@ func (h WebhookHandler) UpdateGitHook(gh *ghapi.GitHook, annotations map[string]
 }
 
 // need to be modified
-func matchBranch(branch string, branches []string) bool {
+func matchBranch(branches []string, branch string) bool {
 	for _, b := range branches {
-		if ok, _ := filepath.Match(branch, b); ok {
+		if ok, _ := filepath.Match(b, branch); ok {
 			return true
 		}
 	}
