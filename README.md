@@ -1,7 +1,5 @@
 # kube-git
 
-
-
 The kube-git controller allows defining `GitHook` object on Kubernetes to trigger resources that run to completion. The main goal is to make CI/CD more easier on kubernetes. Currently supported resources is:
 
 * Argo Workflows
