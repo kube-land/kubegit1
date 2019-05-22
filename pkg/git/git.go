@@ -23,7 +23,7 @@ func FetchGitFile(repository string, branch string, username []byte, password []
 
 	var err error
 
-	path, err := ioutil.TempDir("", "/tmp/hash/clone-example")
+	path, err := ioutil.TempDir("", hash)
 	if err != nil {
 		klog.Info(err)
 	}
