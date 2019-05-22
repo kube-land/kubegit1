@@ -87,6 +87,8 @@ func FetchGitFile(repository string, branch string, username []byte, password []
 	}
 	b, err := ioutil.ReadAll(a)
 
+	fs = nil
+
 	return b, nil
 
 }
