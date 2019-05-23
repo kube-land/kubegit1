@@ -1,7 +1,5 @@
 package main
 
-import _ "net/http/pprof"
-
 import (
 	"net/http"
 	"flag"
@@ -15,8 +13,6 @@ import (
 	"github.com/appwavelets/kube-git/pkg/webhook"
 	"github.com/appwavelets/kube-git/pkg/controller"
 	"github.com/appwavelets/kube-git/pkg/notification"
-
-	"log"
 )
 
 var (
@@ -96,10 +92,6 @@ func main() {
 	http.HandleFunc("/github", handler.GithubWebhook)
 
 	port := fmt.Sprintf(":%d", *webhookPort)
-
-	go func() {
-		log.Println(http.ListenAndServe("localhost:6060", nil))
-	}()
 
 	klog.Info("Starting kube-git webhook at port: 8080")
 	klog.Fatal(http.ListenAndServe(port, nil))

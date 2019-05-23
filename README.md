@@ -100,3 +100,39 @@ GOPATH=~/go CODEGEN_PKG=~/go/src/k8s.io/code-generator bash -xe hack/update-code
 docker build -t abdullahalmariah/kube-git:latest .
 docker push abdullahalmariah/kube-git:latest
 ```
+
+## Memory Utilization
+
+Originally we have used `memfs` form `gopkg.in/src-d/go-billy.v4/memfs` to clone the repository that have a push event to get the manifest file. If the repository size is not small (like `kube-git` which is bigger than 100MB), the controller will have a hight memory utilization. To reduce the memory usage the clone behaviour has changed to plain clone (`gopkg.in/src-d/go-git.v4`) to tmp directory and then we fetch the manifest file.
+
+To analyse the heap memory of the controller we used `pprof` by adding it to `cmd/kubegit/main.go`:
+
+```go
+import _ "net/http/pprof"
+import (
+  "log"
+  ...
+)
+...
+go func() {
+  log.Println(http.ListenAndServe("localhost:6060", nil))
+}()
+```
+
+Then enable the port-forwarding:
+
+```bash
+kubectl port-forward kube-git-... 6060:6060
+```
+
+Then we profile the memory as follow:
+
+```bash
+go tool pprof -alloc_space http://localhost:6060/debug/pprof/heap
+```
+
+The previous command will output the `pb.gz` profileing data which could be viewed as follow:
+
+```bash
+go tool pprof -http=:8090 /path/to/<FILE_NAME>.pb.gz
+```
