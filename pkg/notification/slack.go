@@ -100,7 +100,7 @@ func (m SlackMessage) SendSlackMessage(webhookURL string) error {
     return err
   }
 
-  klog.Infof("reposnse of slack notification: %s, %s", resp.StatusCode, string(body))
+  klog.Infof("reposnse of slack notification: %d, %s", resp.StatusCode, string(body))
   return nil
 
 }
