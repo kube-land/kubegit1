@@ -17,7 +17,7 @@ type GithubStatus struct {
   Context      string `json:"context,omitempty"`
 }
 
-func (g GithubConfig) Notify(status string, kind string, namespace string, name string, annotations map[string]string) {
+func (g GithubConfig) Notify(status string, kind string, namespace string, name string, annotations map[string]string) error {
 
   var state string
   var description string
@@ -40,27 +40,31 @@ func (g GithubConfig) Notify(status string, kind string, namespace string, name 
       Context: "kube-git/build",
     }
 
-  owner, repo := parseGithubRepository(annotations["kubegit.appwavelets.com/repository"])
+  repository := annotations["kubegit.appwavelets.com/repository"]
+  owner, repo := parseGithubRepository(repository)
+  if owner == "" || repo == "" {
+    return fmt.Errorf("Could't parse GitHub repository or owner: %s", repository)
+  }
 
   if g.API == "" {
     g.API = "https://api.github.com"
   }
   apiURL := fmt.Sprintf("%s/repos/%s/%s/statuses/%s", g.API, owner, repo, annotations["kubegit.appwavelets.com/commit"])
-  githubStatus.SendGithubStatus(g.Token, apiURL)
+  return githubStatus.SendGithubStatus(g.Token, apiURL)
 }
 
-func (s GithubStatus) SendGithubStatus(token string, apiURL string) {
+func (s GithubStatus) SendGithubStatus(token string, apiURL string) error {
 
   klog.Infof("Send GitHub status: %s", apiURL)
 
   requestByte, err := json.Marshal(s)
   if err != nil {
-    fmt.Println(err)
+    return err
   }
 
   req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(requestByte))
   if err != nil {
-    fmt.Println(err)
+    return err
   }
   req.Header.Set("Content-Type", "application/json")
   req.SetBasicAuth(token, "x-oauth-basic")
@@ -68,29 +72,16 @@ func (s GithubStatus) SendGithubStatus(token string, apiURL string) {
   client := &http.Client{}
   resp, err := client.Do(req)
   if err != nil {
-    fmt.Println(err)
+    return err
   }
 
   defer resp.Body.Close()
 
-  body, err := ioutil.ReadAll(resp.Body)
+  _, err = ioutil.ReadAll(resp.Body)
   if err != nil {
-
+    return err
   }
-
-
-  if string(body) == "missing_text_or_fallback_or_attachments" && resp.StatusCode == 400 {
-
-  } else if string(body) == "invalid_payload" && resp.StatusCode == 400 {
-
-  } else if string(body) == "channel_not_found" && resp.StatusCode == 404 {
-
-  } else {
-
-  }
-
-  fmt.Println(resp.StatusCode)
-  fmt.Println(string(body))
+  return nil
 
 }
 

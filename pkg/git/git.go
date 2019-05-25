@@ -1,22 +1,18 @@
 package git
 
 import (
+	"os"
+	"os/exec"
+	"path/filepath"
 	"io/ioutil"
-
 	"golang.org/x/crypto/ssh"
-	gitssh "gopkg.in/src-d/go-git.v4/plumbing/transport/ssh"
 
 	git "gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
-	//"gopkg.in/src-d/go-git.v4/storage/memory"
-	//"gopkg.in/src-d/go-billy.v4/memfs"
+	gitssh "gopkg.in/src-d/go-git.v4/plumbing/transport/ssh"
 	"gopkg.in/src-d/go-git.v4/plumbing"
-	"k8s.io/klog"
-	"os"
-	"path/filepath"
-	"fmt"
-	"os/exec"
+	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 
+	"k8s.io/klog"
 )
 
 func FetchGitFile(repository string, branch string, username []byte, password []byte, key []byte, hash string, manifest string) ([]byte, error) {
@@ -84,11 +80,15 @@ func FetchGitFile(repository string, branch string, username []byte, password []
 	cmd := exec.Command("git", "checkout", hash)
 	cmd.Dir = path
 	output, err := cmd.Output()
-	fmt.Println(err)
-	fmt.Println(output)
+	klog.Info(output)
+	if err != nil {
+		return nil, err
+	}
 
 	b, err := ioutil.ReadFile(filepath.Join(path, manifest))
-
+	if err != nil {
+		return nil, err
+	}
 	return b, nil
 
 }

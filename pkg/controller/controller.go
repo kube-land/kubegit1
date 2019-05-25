@@ -207,8 +207,6 @@ func (c *Controller) runWorker() {
 func (c *Controller) processNext() bool {
 	key, quit := c.queue.Get()
 
-  fmt.Println("task", key, quit)
-
 	if quit {
 		return false
 	}
