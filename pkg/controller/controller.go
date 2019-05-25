@@ -241,15 +241,15 @@ func (c *Controller) process(task Task) error {
       job := obj.(*batch.Job)
       if task.Action == "CREATE" {
         c.notification.Notify("STARTED", "Job", job.ObjectMeta.Namespace, job.ObjectMeta.Name, job.ObjectMeta.Annotations)
-        c.jobRemoveStarted(job.ObjectMeta.Namespace, job.ObjectMeta.Name)
+        return c.jobRemoveStarted(job.ObjectMeta.Namespace, job.ObjectMeta.Name)
       } else {
         for _, condition := range job.Status.Conditions {
           if condition.Type == "Failed" {
             c.notification.Notify("FAILED", "Job", job.ObjectMeta.Namespace, job.ObjectMeta.Name, job.ObjectMeta.Annotations)
-            c.jobRemoveNotification(job.ObjectMeta.Namespace, job.ObjectMeta.Name, job.ObjectMeta.Annotations)
+            return c.jobRemoveNotification(job.ObjectMeta.Namespace, job.ObjectMeta.Name, job.ObjectMeta.Annotations)
           } else if condition.Type == "Complete" {
             c.notification.Notify("SUCCEEDED", "Job", job.ObjectMeta.Namespace, job.ObjectMeta.Name, job.ObjectMeta.Annotations)
-            c.jobRemoveNotification(job.ObjectMeta.Namespace, job.ObjectMeta.Name, job.ObjectMeta.Annotations)
+            return c.jobRemoveNotification(job.ObjectMeta.Namespace, job.ObjectMeta.Name, job.ObjectMeta.Annotations)
           }
         }
       }
@@ -265,14 +265,14 @@ func (c *Controller) process(task Task) error {
       wf := obj.(*argo.Workflow)
       if task.Action == "CREATE" {
         c.notification.Notify("STARTED", "Argo Workflow", wf.ObjectMeta.Namespace, wf.ObjectMeta.Name, wf.ObjectMeta.Annotations)
-        c.wfRemoveStarted(wf.ObjectMeta.Namespace, wf.ObjectMeta.Name)
+        return c.wfRemoveStarted(wf.ObjectMeta.Namespace, wf.ObjectMeta.Name)
       } else {
         if wf.Status.Phase == "Failed" {
           c.notification.Notify("FAILED", "Argo Workflow", wf.ObjectMeta.Namespace, wf.ObjectMeta.Name, wf.ObjectMeta.Annotations)
-          c.wfRemoveNotification(wf.ObjectMeta.Namespace, wf.ObjectMeta.Name, wf.ObjectMeta.Annotations)
+          return c.wfRemoveNotification(wf.ObjectMeta.Namespace, wf.ObjectMeta.Name, wf.ObjectMeta.Annotations)
         } else if wf.Status.Phase == "Succeeded" {
           c.notification.Notify("SUCCEEDED", "Argo Workflow", wf.ObjectMeta.Namespace, wf.ObjectMeta.Name, wf.ObjectMeta.Annotations)
-          c.wfRemoveNotification(wf.ObjectMeta.Namespace, wf.ObjectMeta.Name, wf.ObjectMeta.Annotations)
+          return c.wfRemoveNotification(wf.ObjectMeta.Namespace, wf.ObjectMeta.Name, wf.ObjectMeta.Annotations)
         }
       }
     }
@@ -295,14 +295,12 @@ func (c *Controller) GetGitHooks() []*ghapi.GitHook {
 func (c *Controller) jobRemoveNotification(ns string, job string, annotations map[string]string) error {
 	payloadBytes, _ := json.Marshal(notification.NewRemoveNotificationPatch(annotations))
 	_, err := c.clientset.BatchV1().Jobs(ns).Patch(job, types.JSONPatchType, payloadBytes)
-  fmt.Println(err)
 	return err
 }
 
 func (c *Controller) wfRemoveNotification(ns string, wf string, annotations map[string]string) error {
 	payloadBytes, _ := json.Marshal(notification.NewRemoveNotificationPatch(annotations))
 	_, err := c.wfClientset.ArgoprojV1alpha1().Workflows(ns).Patch(wf, types.JSONPatchType, payloadBytes)
-  fmt.Println(err)
 	return err
 }
 

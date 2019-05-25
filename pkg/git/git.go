@@ -80,7 +80,6 @@ func FetchGitFile(repository string, branch string, username []byte, password []
 	cmd := exec.Command("git", "checkout", hash)
 	cmd.Dir = path
 	output, err := cmd.Output()
-	klog.Info(output)
 	if err != nil {
 		return nil, err
 	}
