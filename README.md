@@ -143,7 +143,4 @@ go tool pprof -http=:8090 /path/to/<FILE_NAME>.pb.gz
 * Support leader election for high-availability mode
 * Adding support for more notification
 * Adding support for Bitbucket
-* controller shutdown
-
-
-start manulay
+* Controller shutdown
