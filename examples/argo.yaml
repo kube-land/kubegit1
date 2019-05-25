@@ -42,7 +42,7 @@ spec:
                 RELEASE=$(echo {{workflow.parameters.revision}} | cut -c11-)
                 docker push abdullahalmariah/kube-git:$RELEASE
                 ;;
-              refs/tags/master)
+              refs/heads/master)
                 docker push abdullahalmariah/kube-git:latest
                 ;;
               esac"]
