@@ -39,7 +39,7 @@ spec:
               echo $DOCKER_PASSWORD | docker login -u abdullahalmariah --password-stdin &&
               case {{workflow.parameters.branch}} in
               refs/tags/*)
-                RELEASE=$(echo {{workflow.parameters.revision}} | cut -c11-)
+                RELEASE=$(echo {{workflow.parameters.branch}} | cut -c11-)
                 docker push \"abdullahalmariah/kube-git:$RELEASE\"
                 ;;
               refs/heads/master)
