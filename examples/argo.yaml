@@ -42,8 +42,8 @@ spec:
                 docker push abdullahalmariah/kube-git:latest
                 ;;
               refs/tags/*)
-                RELEASE=$(echo {{workflow.parameters.branch}} | cut -c11-)
-                docker tag abdullahalmariah/kube-git:latest abdullahalmariah/kube-git:$RELEASE
+                RELEASE=$(echo {{workflow.parameters.branch}} | cut -c11-) &&
+                docker tag abdullahalmariah/kube-git:latest abdullahalmariah/kube-git:$RELEASE &&
                 docker push abdullahalmariah/kube-git:$RELEASE
                 ;;
               esac"]
