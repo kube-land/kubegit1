@@ -91,6 +91,8 @@ spec:
 
 The manifest file should have either one `Workflow` or one `Job`. If the defined manifest is of type Argo `Workflow`, you can use `argoWorkflow.revisionParameterName` and `argoWorkflow.branchParameterName` to substitute `arguments.parameters` in the Workflow . That could be used to apply conditions on branches, or to checkout the repository revision of the commit that triggered the Workflow.
 
+When you specify branches in `GitHook` you can use wildcard names or specfic names which should be full ref name of git branch (`refs/heads/BRANCH_NAME`). Further the `argoWorkflow.branchParameterName` will be replaced by the full ref name of the git branch.
+
 *Note:* It is recommended to use `generateName` instead of `name` for the defined resource (Job/Workflow) in the manifest file. If `generateName` is not used, you can set `timestampSuffix: true` to append timestamp to resource name.
 
 ## Build
@@ -100,3 +102,45 @@ GOPATH=~/go CODEGEN_PKG=~/go/src/k8s.io/code-generator bash -xe hack/update-code
 docker build -t abdullahalmariah/kube-git:latest .
 docker push abdullahalmariah/kube-git:latest
 ```
+
+## Memory Utilization
+
+Originally we have used `memfs` form `gopkg.in/src-d/go-billy.v4/memfs` to clone the repository that have a push event to get the manifest file. If the repository size is not small (like `kube-git` which is bigger than 100MB), the controller will have a high memory utilization. To reduce the memory usage the clone behaviour has changed to plain clone (`gopkg.in/src-d/go-git.v4`) to tmp directory and then we fetch the manifest file.
+
+To analyse the heap memory of the controller we used `pprof` by adding it to `cmd/kubegit/main.go`:
+
+```go
+import _ "net/http/pprof"
+import (
+  "log"
+  ...
+)
+...
+go func() {
+  log.Println(http.ListenAndServe("localhost:6060", nil))
+}()
+```
+
+Then enable the port-forwarding:
+
+```bash
+kubectl port-forward kube-git-... 6060:6060
+```
+
+Then we profile the memory as follow:
+
+```bash
+go tool pprof -alloc_space http://localhost:6060/debug/pprof/heap
+```
+
+The previous command will output the `pb.gz` profileing data which could be viewed as follow:
+
+```bash
+go tool pprof -http=:8090 /path/to/<FILE_NAME>.pb.gz
+```
+
+## TODO
+* Support leader election for high-availability mode
+* Adding support for more notification
+* Adding support for Bitbucket
+* controller shutdown

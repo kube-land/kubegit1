@@ -1,24 +1,30 @@
 package git
 
 import (
+	"os"
+	"os/exec"
+	"path/filepath"
 	"io/ioutil"
-
 	"golang.org/x/crypto/ssh"
-	gitssh "gopkg.in/src-d/go-git.v4/plumbing/transport/ssh"
 
 	git "gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
-	"gopkg.in/src-d/go-git.v4/storage/memory"
-	"gopkg.in/src-d/go-billy.v4/memfs"
+	gitssh "gopkg.in/src-d/go-git.v4/plumbing/transport/ssh"
 	"gopkg.in/src-d/go-git.v4/plumbing"
+	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 
+	"k8s.io/klog"
 )
 
-func FetchGitFile(repository string, username []byte, password []byte, key []byte, hash string, manifest string) ([]byte, error) {
+func FetchGitFile(repository string, branch string, username []byte, password []byte, key []byte, hash string, manifest string) ([]byte, error) {
 
-	var r *git.Repository
 	var err error
-	fs := memfs.New()
+
+	path, err := ioutil.TempDir("", hash)
+	if err != nil {
+		klog.Info(err)
+	}
+
+	defer os.RemoveAll(path) // clean up
 
 	if len(key) != 0 {
 
@@ -31,9 +37,12 @@ func FetchGitFile(repository string, username []byte, password []byte, key []byt
 		auth := &gitssh.PublicKeys{User: "git", Signer: signer}
 		auth.HostKeyCallbackHelper.HostKeyCallback = ssh.InsecureIgnoreHostKey()
 
-		r, err = git.Clone(memory.NewStorage(), fs, &git.CloneOptions{
+		_, err = git.PlainClone(path , false, &git.CloneOptions{
 	    URL: repository,
 			Auth: auth,
+			ReferenceName: plumbing.ReferenceName(branch),
+			SingleBranch: true,
+			NoCheckout: true,
 		})
 		if err != nil {
 			return nil, err
@@ -42,9 +51,12 @@ func FetchGitFile(repository string, username []byte, password []byte, key []byt
 	} else if (len(username) != 0 || len(password) != 0) {
 
 		auth := &http.BasicAuth{Username: string(username), Password: string(password)}
-		r, err = git.Clone(memory.NewStorage(), fs, &git.CloneOptions{
+		_, err = git.PlainClone(path , false, &git.CloneOptions{
 	    URL: repository,
 			Auth: auth,
+			ReferenceName: plumbing.ReferenceName(branch),
+			SingleBranch: true,
+			NoCheckout: true,
 		})
 		if err != nil {
 			return nil, err
@@ -52,8 +64,11 @@ func FetchGitFile(repository string, username []byte, password []byte, key []byt
 
 	} else {
 
-		r, err = git.Clone(memory.NewStorage(), fs, &git.CloneOptions{
+		_, err = git.PlainClone(path , false, &git.CloneOptions{
 	    URL: repository,
+			ReferenceName: plumbing.ReferenceName(branch),
+			SingleBranch: true,
+			NoCheckout: true,
 		})
 		if err != nil {
 			return nil, err
@@ -61,23 +76,18 @@ func FetchGitFile(repository string, username []byte, password []byte, key []byt
 
 	}
 
-	worktree, err := r.Worktree()
-	if err != nil {
-		return nil, err
-	}
-	err = worktree.Checkout(&git.CheckoutOptions{
-		Hash: plumbing.NewHash(hash),
-	})
+	klog.Infof("Checking out revision %s", hash)
+	cmd := exec.Command("git", "checkout", hash)
+	cmd.Dir = path
+	_, err = cmd.Output()
 	if err != nil {
 		return nil, err
 	}
 
-	a, err := worktree.Filesystem.Open(manifest)
+	b, err := ioutil.ReadFile(filepath.Join(path, manifest))
 	if err != nil {
 		return nil, err
 	}
-	b, err := ioutil.ReadAll(a)
-
 	return b, nil
 
 }

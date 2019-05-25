@@ -35,10 +35,25 @@ spec:
       image: "abdullahalmariah/cloud-tools:latest"
       command: [sh, -c]
       args: ["until docker ps; do sleep 3; done; echo ready &&
-              docker build -t abdullahalmariah/kube-git:latest ."]
+              docker build -t abdullahalmariah/kube-git:latest . &&
+              echo $DOCKER_PASSWORD | docker login -u abdullahalmariah --password-stdin &&
+              case {{workflow.parameters.branch}} in
+              refs/tags/*)
+                RELEASE=$(echo {{workflow.parameters.revision}} | cut -c11-)
+                docker push abdullahalmariah/kube-git:$RELEASE
+                ;;
+              refs/tags/master)
+                docker push abdullahalmariah/kube-git:latest
+                ;;
+              esac"]
       env:
       - name: DOCKER_HOST
         value: tcp://localhost:2375
+      - name: DOCKER_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: docker-secret-abdullahalmariah
+            key: password
       workingDir: /go/src/github.com/appwavelets/kube-git
       resources:
         limits:

@@ -5,6 +5,7 @@ import(
   "github.com/ghodss/yaml"
 	"io/ioutil"
   "strings"
+  "k8s.io/klog"
 )
 
 type Config struct {
@@ -62,13 +63,19 @@ func (c Config) Notify(status string, kind string, namespace string, name string
 
   if slackValue, slack := annotations["kubegit.appwavelets.com/slack"]; slack {
     if s, ok := c.Slack[slackValue]; ok {
-      s.Notify(status, kind, namespace, name, annotations)
+      err := s.Notify(status, kind, namespace, name, annotations)
+      if err != nil {
+        klog.Errorf("Error sending slack notification '%s': %s", slackValue, err)
+      }
     }
   }
 
   if githubValue, github := annotations["kubegit.appwavelets.com/github"]; github {
     if g, ok := c.Github[githubValue]; ok {
-      g.Notify(status, kind, namespace, name, annotations)
+      err := g.Notify(status, kind, namespace, name, annotations)
+      if err != nil {
+        klog.Errorf("Error sending slack notification '%s': %s", githubValue, err)
+      }
     }
   }
 

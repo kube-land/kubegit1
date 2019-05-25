@@ -6,6 +6,7 @@ import(
   "bytes"
   "io/ioutil"
   "fmt"
+  "k8s.io/klog"
 )
 
 type SlackMessage struct {
@@ -32,7 +33,7 @@ type SlackAttachmentField struct {
   Short bool   `json:"short,omitempty"`
 }
 
-func (s SlackConfig) Notify(status string, kind string, namespace string, name string, annotations map[string]string) {
+func (s SlackConfig) Notify(status string, kind string, namespace string, name string, annotations map[string]string) error {
 
   var color string
   var title string
@@ -70,44 +71,37 @@ func (s SlackConfig) Notify(status string, kind string, namespace string, name s
                          annotations["kubegit.appwavelets.com/branch"],
                          annotations["kubegit.appwavelets.com/commit"],
                        )
-  msg.SendSlackMessage(s.WebhookURL)
+  return msg.SendSlackMessage(s.WebhookURL)
 }
 
-func (m SlackMessage) SendSlackMessage(webhookURL string) {
+func (m SlackMessage) SendSlackMessage(webhookURL string) error {
 
   requestByte, err := json.Marshal(m)
   if err != nil {
-    fmt.Println(err)
+    return err
   }
 
   req, err := http.NewRequest("POST", webhookURL, bytes.NewBuffer(requestByte))
   if err != nil {
-    fmt.Println(err)
+    return err
   }
   req.Header.Set("Content-Type", "application/json")
 
   client := &http.Client{}
   resp, err := client.Do(req)
   if err != nil {
-    fmt.Println(err)
+    return err
   }
 
   defer resp.Body.Close()
 
-  body, _ := ioutil.ReadAll(resp.Body)
-
-  if string(body) == "missing_text_or_fallback_or_attachments" && resp.StatusCode == 400 {
-
-  } else if string(body) == "invalid_payload" && resp.StatusCode == 400 {
-
-  } else if string(body) == "channel_not_found" && resp.StatusCode == 404 {
-
-  } else {
-
+  body, err := ioutil.ReadAll(resp.Body)
+  if err != nil {
+    return err
   }
 
-  fmt.Println(resp.StatusCode)
-  fmt.Println(body)
+  klog.Infof("reposnse of slack notification: %d, %s", resp.StatusCode, string(body))
+  return nil
 
 }
 
