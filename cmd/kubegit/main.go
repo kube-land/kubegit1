@@ -93,6 +93,6 @@ func main() {
 
 	port := fmt.Sprintf(":%d", *webhookPort)
 
-	klog.Infof("Starting kube-git webhook at port: %s", *webhookPort)
+	klog.Infof("Starting kube-git webhook at port: %d", *webhookPort)
 	klog.Fatal(http.ListenAndServe(port, nil))
 }

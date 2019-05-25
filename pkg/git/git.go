@@ -79,7 +79,7 @@ func FetchGitFile(repository string, branch string, username []byte, password []
 	klog.Infof("Checking out revision %s", hash)
 	cmd := exec.Command("git", "checkout", hash)
 	cmd.Dir = path
-	output, err := cmd.Output()
+	_, err = cmd.Output()
 	if err != nil {
 		return nil, err
 	}

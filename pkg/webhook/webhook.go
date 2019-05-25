@@ -72,20 +72,15 @@ func (h WebhookHandler) GithubWebhook(w http.ResponseWriter, r *http.Request) {
 		case github.PushPayload:
 			push := payload.(github.PushPayload)
 
-			if push.HeadCommit.ID == "" {
-				fmt.Println("no commit")
-				return
-			}
-
-			if push.HeadCommit.ID == "nil" {
-				fmt.Println("no commit nil")
-				return
-			}
-
 			sshURL := push.Repository.SSHURL
 			cloneURL := push.Repository.CloneURL
 			branch := push.Ref
+
 			hash := push.HeadCommit.ID
+			if hash == "" {
+				return
+			}
+
 			author := push.HeadCommit.Author.Name
 
 			// create status annotations
