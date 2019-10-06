@@ -13,8 +13,8 @@ import (
 
   argo "github.com/argoproj/argo/pkg/apis/workflow/v1alpha1"
 
-  ghapi "github.com/appwavelets/kube-git/pkg/apis/githook/v1alpha1"
-  ghclient "github.com/appwavelets/kube-git/pkg/client/clientset/versioned"
+  ghapi "github.com/appspero/kube-git/pkg/apis/githook/v1alpha1"
+  ghclient "github.com/appspero/kube-git/pkg/client/clientset/versioned"
 	wfclient "github.com/argoproj/argo/pkg/client/clientset/versioned"
 
   "k8s.io/client-go/util/workqueue"
@@ -22,7 +22,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
   "k8s.io/client-go/kubernetes"
 
-  "github.com/appwavelets/kube-git/pkg/notification"
+  "github.com/appspero/kube-git/pkg/notification"
 
   "encoding/json"
   types "k8s.io/apimachinery/pkg/types"

@@ -1,21 +1,21 @@
 package notification
 
 import (
-	ghapi "github.com/appwavelets/kube-git/pkg/apis/githook/v1alpha1"
+	ghapi "github.com/appspero/kube-git/pkg/apis/githook/v1alpha1"
 )
 
 func GetNotificationAnnotations(gh *ghapi.GitHook) map[string]string {
 	annotations := make(map[string]string)
 
 	if gh.Spec.Notification.Slack != "" {
-		annotations["kubegit.appwavelets.com/slack"] = gh.Spec.Notification.Slack
+		annotations["kubegit.appspero.com/slack"] = gh.Spec.Notification.Slack
 	}
 	if gh.Spec.Notification.Github != "" {
-		annotations["kubegit.appwavelets.com/github"] = gh.Spec.Notification.Github
+		annotations["kubegit.appspero.com/github"] = gh.Spec.Notification.Github
 	}
 
 	if len(annotations) > 0 {
-		annotations["kubegit.appwavelets.com/started"] = "false"
+		annotations["kubegit.appspero.com/started"] = "false"
 	}
 
 	return annotations
@@ -27,10 +27,10 @@ func ShouldNotify(annotations map[string]string) bool {
   if annotations == nil {
     return false
   }
-  if _, ok := annotations["kubegit.appwavelets.com/github"]; ok {
+  if _, ok := annotations["kubegit.appspero.com/github"]; ok {
     return true
   }
-  if _, ok := annotations["kubegit.appwavelets.com/slack"]; ok {
+  if _, ok := annotations["kubegit.appspero.com/slack"]; ok {
     return true
   }
   return false
@@ -41,7 +41,7 @@ func ShouldNotifyStarted(annotations map[string]string) bool {
   if annotations == nil {
     return false
   }
-  if _, ok := annotations["kubegit.appwavelets.com/started"]; ok {
+  if _, ok := annotations["kubegit.appspero.com/started"]; ok {
     return true
   }
   return false
@@ -56,17 +56,17 @@ func NewRemoveNotificationPatch(annotations map[string]string) []PatchAnnotation
 
 	var patch []PatchAnnotations
 
-	if _, ok := annotations["kubegit.appwavelets.com/github"]; ok {
+	if _, ok := annotations["kubegit.appspero.com/github"]; ok {
 		patch = append(patch, PatchAnnotations{
 			Op:    "remove",
-	    Path:  "/metadata/annotations/kubegit.appwavelets.com~1github",
+	    Path:  "/metadata/annotations/kubegit.appspero.com~1github",
 	   })
 	}
 
-	if _, ok := annotations["kubegit.appwavelets.com/slack"]; ok {
+	if _, ok := annotations["kubegit.appspero.com/slack"]; ok {
 		patch = append(patch, PatchAnnotations{
 	  	Op:    "remove",
-	    Path:  "/metadata/annotations/kubegit.appwavelets.com~1slack",
+	    Path:  "/metadata/annotations/kubegit.appspero.com~1slack",
 	  })
 	}
 
@@ -77,7 +77,7 @@ func NewRemoveStartedPatch() []PatchAnnotations {
   return []PatchAnnotations{
     {
       Op:    "remove",
-      Path:  "/metadata/annotations/kubegit.appwavelets.com~1started",
+      Path:  "/metadata/annotations/kubegit.appspero.com~1started",
     },
   }
 }

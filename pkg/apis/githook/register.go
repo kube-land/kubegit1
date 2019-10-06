@@ -1,5 +1,5 @@
 package githook
 
 const (
-	GroupName = "kubegit.appwavelets.com"
+	GroupName = "kubegit.appspero.com"
 )
