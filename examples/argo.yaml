@@ -35,16 +35,16 @@ spec:
       image: "abdullahalmariah/cloud-tools:latest"
       command: [sh, -c]
       args: ["until docker ps; do sleep 3; done; echo ready &&
-              docker build -t abdullahalmariah/kube-git:latest . &&
-              echo $DOCKER_PASSWORD | docker login -u abdullahalmariah --password-stdin &&
+              docker build -t appspero/kube-git:latest . &&
+              echo $DOCKER_PASSWORD | docker login -u appspero --password-stdin &&
               case {{workflow.parameters.branch}} in
               refs/heads/master)
-                docker push abdullahalmariah/kube-git:latest
+                docker push appspero/kube-git:latest
                 ;;
               refs/tags/*)
                 RELEASE=$(echo {{workflow.parameters.branch}} | cut -c11-) &&
-                docker tag abdullahalmariah/kube-git:latest abdullahalmariah/kube-git:$RELEASE &&
-                docker push abdullahalmariah/kube-git:$RELEASE
+                docker tag appspero/kube-git:latest appspero/kube-git:$RELEASE &&
+                docker push appspero/kube-git:$RELEASE
                 ;;
               esac"]
       env:
@@ -53,7 +53,7 @@ spec:
       - name: DOCKER_PASSWORD
         valueFrom:
           secretKeyRef:
-            name: docker-secret-abdullahalmariah
+            name: docker-secret-appspero
             key: password
       workingDir: /go/src/github.com/appspero/kube-git
       resources:
