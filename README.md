@@ -98,7 +98,7 @@ When you specify branches in `GitHook` you can use wildcard names or specfic nam
 ## Build
 
 ```bash
-GOPATH=~/go CODEGEN_PKG=~/go/src/k8s.io/code-generator bash -xe hack/update-codegen.sh
+GOPATH=~/go bash -xe hack/update-codegen.sh
 docker build -t abdullahalmariah/kube-git:latest .
 docker push abdullahalmariah/kube-git:latest
 ```
