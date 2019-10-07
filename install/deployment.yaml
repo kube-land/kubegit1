@@ -20,8 +20,6 @@ spec:
         imagePullPolicy: Always
         name: kube-git
         args:
-          - -logtostderr=true
-          - -v=2
           - -github-webhook-secret=SECRET
           - -notification-config-file=/etc/kube-git/notification.yaml
         ports:
