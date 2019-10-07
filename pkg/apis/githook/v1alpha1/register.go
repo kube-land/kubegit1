@@ -5,7 +5,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 
-	"github.com/appwavelets/kube-git/pkg/apis/githook"
+	"github.com/appspero/kube-git/pkg/apis/githook"
 )
 
 // SchemeGroupVersion is group version used to register these objects

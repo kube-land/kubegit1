@@ -61,7 +61,7 @@ func LoadConfig(configFile string) (*Config, error) {
 
 func (c Config) Notify(status string, kind string, namespace string, name string, annotations map[string]string) {
 
-  if slackValue, slack := annotations["kubegit.appwavelets.com/slack"]; slack {
+  if slackValue, slack := annotations["kubegit.appspero.com/slack"]; slack {
     if s, ok := c.Slack[slackValue]; ok {
       err := s.Notify(status, kind, namespace, name, annotations)
       if err != nil {
@@ -70,7 +70,7 @@ func (c Config) Notify(status string, kind string, namespace string, name string
     }
   }
 
-  if githubValue, github := annotations["kubegit.appwavelets.com/github"]; github {
+  if githubValue, github := annotations["kubegit.appspero.com/github"]; github {
     if g, ok := c.Github[githubValue]; ok {
       err := g.Notify(status, kind, namespace, name, annotations)
       if err != nil {

@@ -41,7 +41,7 @@ func (s SlackConfig) Notify(status string, kind string, namespace string, name s
   var fallback string
 
   resource := fmt.Sprintf("%s/%s", namespace, name)
-  gh := annotations["kubegit.appwavelets.com/githook"]
+  gh := annotations["kubegit.appspero.com/githook"]
 
   if status == "STARTED" {
     color = "warning"
@@ -66,10 +66,10 @@ func (s SlackConfig) Notify(status string, kind string, namespace string, name s
                          title,
                          text,
                          fallback,
-                         annotations["kubegit.appwavelets.com/repository"],
-                         annotations["kubegit.appwavelets.com/author"],
-                         annotations["kubegit.appwavelets.com/branch"],
-                         annotations["kubegit.appwavelets.com/commit"],
+                         annotations["kubegit.appspero.com/repository"],
+                         annotations["kubegit.appspero.com/author"],
+                         annotations["kubegit.appspero.com/branch"],
+                         annotations["kubegit.appspero.com/commit"],
                        )
   return msg.SendSlackMessage(s.WebhookURL)
 }
@@ -144,7 +144,7 @@ func NewSlackMessage(color, channel, url, title, text, fallback, repository, aut
   slackMessage := SlackMessage{
     Channel: channel,
     Username: "kube-git",
-    IconURL: "https://raw.githubusercontent.com/appwavelets/kube-git/master/icon.png",
+    IconURL: "https://raw.githubusercontent.com/appspero/kube-git/master/icon.png",
     Attachments: attachments,
   }
 

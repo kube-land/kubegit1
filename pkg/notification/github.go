@@ -40,7 +40,7 @@ func (g GithubConfig) Notify(status string, kind string, namespace string, name 
       Context: "kube-git/build",
     }
 
-  repository := annotations["kubegit.appwavelets.com/repository"]
+  repository := annotations["kubegit.appspero.com/repository"]
   owner, repo := parseGithubRepository(repository)
   if owner == "" || repo == "" {
     return fmt.Errorf("Could't parse GitHub repository or owner: %s", repository)
@@ -49,7 +49,7 @@ func (g GithubConfig) Notify(status string, kind string, namespace string, name 
   if g.API == "" {
     g.API = "https://api.github.com"
   }
-  apiURL := fmt.Sprintf("%s/repos/%s/%s/statuses/%s", g.API, owner, repo, annotations["kubegit.appwavelets.com/commit"])
+  apiURL := fmt.Sprintf("%s/repos/%s/%s/statuses/%s", g.API, owner, repo, annotations["kubegit.appspero.com/commit"])
   return githubStatus.SendGithubStatus(g.Token, apiURL)
 }
 
@@ -86,8 +86,8 @@ func (s GithubStatus) SendGithubStatus(token string, apiURL string) error {
 }
 
 func parseGithubRepository(repository string) (string, string) {
-  // https://github.com/appwavelets/kube-git.git
-  // git@github.com:appwavelets/kube-git.git
+  // https://github.com/appspero/kube-git.git
+  // git@github.com:appspero/kube-git.git
   repoTokenize := strings.Split(repository, "/")
   if len(repoTokenize) >= 2 {
     owner := repoTokenize[len(repoTokenize)-2]

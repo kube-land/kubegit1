@@ -56,16 +56,16 @@ To configure GitHub webhook use `DOMAIN/github` URL (for example: `https://kubeg
 Then you deploy a `GitHook`. For example:
 
 ```yaml
-apiVersion: kubegit.appwavelets.com/v1alpha1
+apiVersion: kubegit.appspero.com/v1alpha1
 kind: GitHook
 metadata:
   name: githook-example
   namespace: ci
 spec:
   # for SSH
-  repository: git@github.com:appwavelets/kube-git.git
+  repository: git@github.com:appspero/kube-git.git
   # for http
-  #repository: https://github.com/appwavelets/kube-git.git
+  #repository: https://github.com/appspero/kube-git.git
   branches:
     - "*"
   # manifest that will be applied

@@ -8,11 +8,11 @@ import (
 	"k8s.io/klog"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
-	ghclient "github.com/appwavelets/kube-git/pkg/client/clientset/versioned"
+	ghclient "github.com/appspero/kube-git/pkg/client/clientset/versioned"
 	wfclient "github.com/argoproj/argo/pkg/client/clientset/versioned"
-	"github.com/appwavelets/kube-git/pkg/webhook"
-	"github.com/appwavelets/kube-git/pkg/controller"
-	"github.com/appwavelets/kube-git/pkg/notification"
+	"github.com/appspero/kube-git/pkg/webhook"
+	"github.com/appspero/kube-git/pkg/controller"
+	"github.com/appspero/kube-git/pkg/notification"
 )
 
 var (

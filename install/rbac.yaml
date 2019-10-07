@@ -15,7 +15,7 @@ rules:
 - apiGroups: [""]
   resources: ["secrets"]
   verbs: ["get","list","watch"]
-- apiGroups: ["kubegit.appwavelets.com"]
+- apiGroups: ["kubegit.appspero.com"]
   resources: ["githooks"]
   verbs: ["get","list","watch"]
 - apiGroups: ["*"]

@@ -11,13 +11,13 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 
-	ghapi "github.com/appwavelets/kube-git/pkg/apis/githook/v1alpha1"
-	ghclient "github.com/appwavelets/kube-git/pkg/client/clientset/versioned"
+	ghapi "github.com/appspero/kube-git/pkg/apis/githook/v1alpha1"
+	ghclient "github.com/appspero/kube-git/pkg/client/clientset/versioned"
 
-	"github.com/appwavelets/kube-git/pkg/controller"
-	"github.com/appwavelets/kube-git/pkg/notification"
-	"github.com/appwavelets/kube-git/pkg/tools"
-	"github.com/appwavelets/kube-git/pkg/git"
+	"github.com/appspero/kube-git/pkg/controller"
+	"github.com/appspero/kube-git/pkg/notification"
+	"github.com/appspero/kube-git/pkg/tools"
+	"github.com/appspero/kube-git/pkg/git"
 	"gopkg.in/go-playground/webhooks.v5/github"
 
 
@@ -85,9 +85,9 @@ func (h WebhookHandler) GithubWebhook(w http.ResponseWriter, r *http.Request) {
 
 			// create status annotations
 			annotations := make(map[string]string)
-			annotations["kubegit.appwavelets.com/branch"] = branch
-			annotations["kubegit.appwavelets.com/commit"] = hash
-			annotations["kubegit.appwavelets.com/author"] = author
+			annotations["kubegit.appspero.com/branch"] = branch
+			annotations["kubegit.appspero.com/commit"] = hash
+			annotations["kubegit.appspero.com/author"] = author
 
 			// get GitHooks
 			ghs := h.controller.GetGitHooks()
@@ -109,8 +109,8 @@ func (h WebhookHandler) GithubWebhook(w http.ResponseWriter, r *http.Request) {
 						continue
 					}
 
-					annotations["kubegit.appwavelets.com/githook"] = ghFullname
-					annotations["kubegit.appwavelets.com/repository"] = gh.Spec.Repository
+					annotations["kubegit.appspero.com/githook"] = ghFullname
+					annotations["kubegit.appspero.com/repository"] = gh.Spec.Repository
 
 					var username []byte
 					var password []byte
@@ -161,7 +161,7 @@ func (h WebhookHandler) GithubWebhook(w http.ResponseWriter, r *http.Request) {
 
 func (h WebhookHandler) ApplyGitHook(manifest []byte, gh *ghapi.GitHook, annotations map[string]string) {
 
-	ghFullname := annotations["kubegit.appwavelets.com/githook"]
+	ghFullname := annotations["kubegit.appspero.com/githook"]
 
 	var appliedResource ghapi.ResourceSpec
 
@@ -210,10 +210,10 @@ func (h WebhookHandler) ApplyGitHook(manifest []byte, gh *ghapi.GitHook, annotat
 			if gh.Spec.ArgoWorkflow.RevisionParameterName != "" {
 				for _, p := range workflow.Spec.Arguments.Parameters {
 					if p.Name == gh.Spec.ArgoWorkflow.RevisionParameterName {
-						*p.Value = annotations["kubegit.appwavelets.com/commit"]
+						*p.Value = annotations["kubegit.appspero.com/commit"]
 					}
 					if p.Name == gh.Spec.ArgoWorkflow.BranchParameterName {
-						*p.Value = annotations["kubegit.appwavelets.com/branch"]
+						*p.Value = annotations["kubegit.appspero.com/branch"]
 					}
 				}
 			}
@@ -298,9 +298,9 @@ func (h WebhookHandler) ApplyGitHook(manifest []byte, gh *ghapi.GitHook, annotat
 
 func (h WebhookHandler) UpdateGitHook(gh *ghapi.GitHook, annotations map[string]string, appliedResource ghapi.ResourceSpec) {
 	ghFullname := gh.Namespace + "/" + gh.Name
-	gh.Status.LastCommit = annotations["kubegit.appwavelets.com/commit"]
-	gh.Status.Author = annotations["kubegit.appwavelets.com/author"]
-	gh.Status.Branch = annotations["kubegit.appwavelets.com/branch"]
+	gh.Status.LastCommit = annotations["kubegit.appspero.com/commit"]
+	gh.Status.Author = annotations["kubegit.appspero.com/author"]
+	gh.Status.Branch = annotations["kubegit.appspero.com/branch"]
 	gh.Status.TriggerCount = gh.Status.TriggerCount + 1
 	gh.Status.AppliedResource = appliedResource
 	gh.Status.LastTrigger = metav1.Time{Time: time.Now().UTC()}
